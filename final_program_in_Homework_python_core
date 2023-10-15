@@ -1,0 +1,261 @@
+from collections import UserDict
+from datetime import datetime, timedelta
+import pickle
+
+
+
+class Field:
+    def __init__(self, value):
+        self._value = value
+
+    def __str__(self):
+        return str(self._value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+
+class Name(Field):
+    pass
+
+
+class Phone(Field):
+    def __init__(self, value):
+        super().__init__(value)
+        self.validate_phone(value)
+
+    def validate_phone(self, phone):
+        if not (len(phone) == 10 and phone.isdigit()):
+            raise ValueError("Invalid phone number format")
+
+
+class Birthday(Field):
+    def __init__(self, value):
+        super().__init__(value)
+        self.validate_birthday(value)
+
+    def validate_birthday(self, birthday):
+        try:
+            datetime.strptime(birthday, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError("Invalid birthday format (should be 'YYYY-MM-DD')")
+
+
+class Record:
+    def __init__(self, name, phone, birthday=None):
+        self.name = Name(name)
+        self.phones = [Phone(phone)]
+        if birthday:
+            self.birthday = Birthday(birthday)
+        else:
+            self.birthday = None
+
+    def add_phone(self, phone):
+        self.phones.append(Phone(phone))
+
+    def remove_phone(self, phone):
+        initial_length = len(self.phones)
+        self.phones = [p for p in self.phones if p.value != phone]
+        if len(self.phones) == initial_length:
+            raise ValueError("Phone number not found")
+
+    def edit_phone(self, old_phone, new_phone):
+        for phone_obj in self.phones:
+            if phone_obj.value == old_phone:
+                new_phone_instance = Phone(new_phone)
+                if not new_phone_instance.validate_phone(new_phone_instance.value):
+                    raise ValueError("Invalid phone number format")
+                phone_obj.value = new_phone
+                return
+        raise ValueError("Phone number not found")
+
+    def find_phone(self, phone):
+        for phone_obj in self.phones:
+            if phone_obj.value == phone:
+                return phone_obj
+
+    def days_to_birthday(self):
+        if self.birthday:
+            today = datetime.now()
+            next_birthday = datetime(today.year, self.birthday.value.month, self.birthday.value.day)
+            if today > next_birthday:
+                next_birthday = datetime(today.year + 1, self.birthday.value.month, self.birthday.value.day)
+            days_left = (next_birthday - today).days
+            return days_left
+
+    def __str__(self):
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+
+
+class AddressBook(UserDict):
+    
+    def add_record(self, record):
+        self.data[record.name.value] = record
+
+    def find(self, name):
+        return self.data.get(name)
+
+    def delete(self, name):
+        if name in self.data:
+            del self.data[name]
+
+    def iterator(self, N=1):
+        records = list(self.data.values())
+        for i in range(0, len(records), N):
+            yield records[i:i + N]
+
+    def save_to_file(self, file_path):
+        with open(file_path, 'wb') as file:
+            pickle.dump(self.data, file)
+
+    def load_from_file(self, file_path):
+        try:
+            with open(file_path, 'rb') as file:
+                self.data = pickle.load(file)
+        except FileNotFoundError:
+            pass
+
+    def search(self, query):
+        results = []
+        for record in self.data.values():
+            if query in record.name.value:
+                results.append(record)
+            for phone in record.phones:
+                if query in phone.value:
+                    results.append(record)
+
+
+# Now let's create a decorator function to handle errors
+def input_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError:
+            return "Enter user name"
+        except ValueError:
+            return "Give me name and phone please"
+        except IndexError:
+            return "Invalid command format"
+
+    return wrapper
+
+
+contacts = AddressBook()
+
+
+# Now let's create a function for entering user input into our dictionary(contacts = {})
+@input_error
+def add_contact(command):
+    _, *args = command.split(maxsplit=3)
+    if len(args) < 3:
+        return "Give me name,phone and birthday please"
+    name, phone, birthday = args
+    record = Record(name, phone, birthday)
+    contacts.add_record(record)
+    return f"Contact {name} added with phone number {phone} and birthday {birthday}"
+
+'''Now let's create a function to enter the data entered by the user into our dictionary,
+if the user has changed the phone number of an existing contact in the dictionary'''
+
+
+@input_error
+def change_phone(command):
+    _, name, new_phone = command.split()
+    record = contacts.find(name)
+    if record:
+        record.edit_phone(record.phones[0].value, new_phone)
+        return f"Phone number for {name} updated to {new_phone}"
+    else:
+        return "Contact not found"
+
+
+# Now let's create a function to display the phone number of the contact whose name the user entered
+@input_error
+def get_phone(command):
+    _, name = command.split()
+    record = contacts.find(name)
+    if record:
+        return f"Phone number for {name}: {record.phones[0].value}"
+    else:
+        return "Contact not found"
+
+
+# Now let's create a function to output all the data entered by the user
+@input_error
+def show_all_contacts(command):
+    if not contacts.data:
+        return "No contacts found"
+    contact_list = "\n".join([str(record) for record in contacts.data.values()])
+    return contact_list
+
+@input_error
+def get_birthday(command):
+    _, name = command.split()
+    record = contacts.find(name)
+    if record and record.birthday:
+        return f"Birthday of {name}: {record.birthday.value}"
+    elif record and not record.birthday:
+        return f"{name} does not have a birthday recorded."
+    else:
+        return "Contact not found"
+    
+def search_contacts(query):
+    results = []
+    for record in contacts.data.values():
+        if query in record.name.value:
+            results.append(record)
+        for phone in record.phones:
+            if query in phone.value:
+                results.append(record)
+    return results
+
+
+'''Now let's create the main function, which will do all the interaction
+with the user and will perform all the logic of the program'''
+
+
+def main():
+    print("How can I help you?")
+    while True:
+        user_input = input().strip().lower()
+
+        if user_input in ("good bye", "close", "exit"):
+            print("Good bye!")
+            break
+        elif user_input == "hello":
+            print("How can I help you?")
+        elif user_input.startswith("add"):
+            result = add_contact(user_input)
+            print(result)
+        elif user_input.startswith("change"):
+            result = change_phone(user_input)
+            print(result)
+        elif user_input.startswith("phone"):
+            result = get_phone(user_input)
+            print(result)
+        elif user_input == "show all":
+            result = show_all_contacts(user_input)
+            print(result)
+        elif user_input.startswith("birthday"):
+            result = get_birthday(user_input)
+            print(result)
+        elif user_input.startswith("search"):
+            query = user_input[7:].strip()
+            results = search_contacts(query)
+            if results:
+                print("Search results:")
+                for result in results:
+                    print(result)
+            else:
+                print("No matching contacts found.")
+        else:
+            print("Invalid command")
+
+
+if __name__ == "__main__":
+    main()
