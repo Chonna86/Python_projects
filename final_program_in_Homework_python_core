@@ -175,7 +175,7 @@ def change_phone(command):
 
 
 # Now let's create a function to display the phone number of the contact whose name the user entered
-@input_error
+
 def get_phone(command):
     _, name = command.split()
     record = contacts.find(name)
