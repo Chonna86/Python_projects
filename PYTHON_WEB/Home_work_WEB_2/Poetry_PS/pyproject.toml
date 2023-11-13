@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "poetry-ps"
+version = "0.1.0"
+description = ""
+authors = ["Oleksandr Chonka <alexandrchonka@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
