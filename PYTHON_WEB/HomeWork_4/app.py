@@ -5,7 +5,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 import socket
 from json_handler import server as json_socket_server
-from datetime import datetime
+
 
 BASE_DIR = pathlib.Path()
 
