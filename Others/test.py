@@ -1,18 +1,18 @@
-class Human:
-    def __init__(self, name, age=0):
-        self.name = name
-        self.age = age
+import aiohttp
+import asyncio
 
-    def introduce(self):
-        print(f"Меня зовут {self.name} и мне {self.age} лет.")   
-person = Human('Rebecca',35)
-person_1 = Human('Bob',45)
-person.introduce()
-print(person.name)
-print(person.age)
-print(person_1.name)
-while True:
-    user_input = input()
-    print(user_input)
-    if user_input == "exit":
-        break
+
+async def fetch_data(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.text()
+
+
+async def main():
+    url = "https://www.google.com"
+    data = await fetch_data(url)
+    print(data)
+
+
+# Запуск цикла событий asyncio и выполнение асинхронной программы
+asyncio.run(main())
