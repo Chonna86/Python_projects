@@ -21,5 +21,7 @@ async def exchange_command_handler(websocket, path):
 
 if __name__ == '__main__':
     start_server = websockets.serve(exchange_command_handler, "localhost", 8765)
+    print('Start server...')
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
+    

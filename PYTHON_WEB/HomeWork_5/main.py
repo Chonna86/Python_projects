@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timedelta
 import json
 from aiofile import AIOFile
+import os
 
 async def fetch_exchange_rate(date, currencies=['EUR', 'USD']):
     url = f'https://api.privatbank.ua/p24api/exchange_rates?json&date={date}'
@@ -30,9 +31,11 @@ async def fetch_exchange_rates_for_last_days(num_of_days, currencies=['EUR', 'US
         results.append({date: exchange_rate})
     return results
 
-async def write_to_log(command):
-    async with AIOFile('log.txt', 'a') as afp:
-        await afp.write(f'{datetime.now()} - {command}\n')
+async def write_to_log(command, log_directory='D:/PythonProjects/MY_PYTHON_WAY/PYTHON_WEB/HomeWork_5'):
+    log_path = os.path.join(log_directory, 'log.txt')
+
+    async with AIOFile(log_path, 'a') as afp:
+        await afp.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - {command}\n')
 
 async def main():
     parser = argparse.ArgumentParser(description='Отримання курсів валют з API ПриватБанку')
