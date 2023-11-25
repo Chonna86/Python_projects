@@ -1,17 +1,18 @@
 import aiohttp
 import asyncio
 
-a = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]
 
 async def fetch_data(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             return await response.text()
 
+
 async def main():
-    url = 'https://www.google.com'
+    url = "https://www.google.com"
     data = await fetch_data(url)
     print(data)
+
 
 # Запуск цикла событий asyncio и выполнение асинхронной программы
 asyncio.run(main())
