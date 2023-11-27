@@ -39,6 +39,6 @@ if __name__== '__main__' :
             #create_table(conn, create_table_users)
             c = conn.cursor()
             instr = 'INSERT INTO users (name, email, password, age) VALUES(%s,%s,%s,%s)'
-            c.execute(instr, ('Михайло', 'mixa@api.com','qwerty','25'))
+            c.execute(instr, ('Михайло', 'mixa@api.com','qwerty',25))
             c.close()
             conn.commit()
