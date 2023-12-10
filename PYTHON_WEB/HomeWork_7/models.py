@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, Float, MetaData
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
+metadata = MetaData()
 
 class Student(Base):
     __tablename__ = 'students'
