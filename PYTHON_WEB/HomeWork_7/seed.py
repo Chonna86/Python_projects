@@ -7,7 +7,7 @@ from datetime import date, timedelta
 
 fake = Faker()
 
-engine = create_engine('postgresql://postgres:password@localhost/postgres')
+engine = create_engine('postgresql://postgres:password@localhost/postgres_07')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
