@@ -4,7 +4,7 @@ from models import Author, Quote
 from mongoengine import connect
 
 # Запуск Scrapy для скрапінгу сайту та збереження даних у файли
-subprocess.run(['scrapy', 'runspider', 'quotes_scraper/spiders/quotes_spider.py', '-o', 'quotes.json'])
+subprocess.run(['scrapy', 'runspider', 'quotes_spider.py', '-o', 'quotes.json'])
 
 # Завантаження даних з файлу quotes.json у MongoDB
 username = 'alexandrchonka'
