@@ -2,8 +2,16 @@ import pika
 from mongoengine import connect
 from models import Contact
 
-# Підключення до MongoDB
-connect('mongodb+srv://alexandrchonka:7cxbWsKKJ0TQdY7A@cluster0.cvqzmdk.mongodb.net/?retryWrites=true&w=majority')
+username = 'alexandrchonka'
+password = '7cxbWsKKJ0TQdY7A'
+cluster_url = 'cluster0.cvqzmdk.mongodb.net'
+database_name = 'mongo_demo'
+connect(
+    db=database_name,
+    username=username,
+    password=password,
+    host=f'mongodb+srv://{username}:{password}@{cluster_url}/{database_name}?retryWrites=true&w=majority'
+)
 
 # Параметри RabbitMQ
 rabbitmq_uri = 'amqp://guest:guest@localhost:5672/'
