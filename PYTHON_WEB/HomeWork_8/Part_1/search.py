@@ -4,8 +4,16 @@ from mongoengine import connect
 from models import Author, Quote
 
 # З'єднання з базою даних MongoDB Atlas
-uri = 'mongodb+srv://alexandrchonka:7cxbWsKKJ0TQdY7A@cluster0.cvqzmdk.mongodb.net/?retryWrites=true&w=majority'
-connect(uri)
+username = 'alexandrchonka'
+password = '7cxbWsKKJ0TQdY7A'
+cluster_url = 'cluster0.cvqzmdk.mongodb.net'
+database_name = 'mongo_demo'
+connect(
+    db=database_name,
+    username=username,
+    password=password,
+    host=f'mongodb+srv://{username}:{password}@{cluster_url}/{database_name}?retryWrites=true&w=majority'
+)
 
 # Підключення до Redis
 redis_client = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
