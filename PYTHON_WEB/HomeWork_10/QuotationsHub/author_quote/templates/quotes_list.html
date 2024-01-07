@@ -1,0 +1,29 @@
+{% for quote in quotes %}
+    <p>{{ quote.text }}</p>
+    <p>Теги:
+        {% for tag in quote.tags.all %}
+            <a href="{% url 'quotes_by_tag' tag_name=tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+{% endfor %}
+<h2>Top Ten tags</h2>
+<ul>
+    <li><a href="{% url 'top_tags' %}">View Top Ten tags</a></li>
+</ul>
+<div class="pagination">
+    <span class="step-links">
+        {% if quotes.has_previous %}
+            <a href="?page=1">&laquo; перша</a>
+            <a href="?page={{ quotes.previous_page_number }}">попередня</a>
+        {% endif %}
+
+        <span class="current">
+            Сторінка {{ quotes.number }} з {{ quotes.paginator.num_pages }}.
+        </span>
+
+        {% if quotes.has_next %}
+            <a href="?page={{ quotes.next_page_number }}">наступна</a>
+            <a href="?page={{ quotes.paginator.num_pages }}">остання &raquo;</a>
+        {% endif %}
+    </span>
+</div>

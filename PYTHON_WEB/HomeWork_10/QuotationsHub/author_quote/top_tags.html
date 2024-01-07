@@ -1,0 +1,6 @@
+<h2>Top Ten tags</h2>
+<ul>
+    {% for tag in top_tags %}
+        <li>{{ tag.name }} ({{ tag.num_quotes }} quotes)</li>
+    {% endfor %}
+</ul>
